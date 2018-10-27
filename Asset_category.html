@@ -1,0 +1,124 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+	<title>类别记录</title>
+	<link rel="stylesheet" href="css/reset.css">
+	<link rel="stylesheet" href="css/unify.css">
+	<style>
+	  .input_box li{
+	    width:36%;
+	  }
+	  .min_window{
+	    width:25%;
+		height:260px;
+	  }
+	  .min_window h2{
+	    width:66%;
+	  }
+	  .min_window li{
+	    width:100%;
+	  }
+	</style>
+  </head>
+  <body>
+    <h1>资产类别列表</h1>
+	<div class="btn_box">
+	  <span class="btn">新增</span>
+	  <span class="btn">删除</span>
+	</div>
+	<table class="table">
+	  <thead></thead>
+	  <tbody></tbody>
+	</table>
+	<div class="article">
+	  <select>
+	    <option value="10">10条/页</option>
+	    <option value="15">15条/页</option>
+	    <option value="20">20条/页</option>
+	    <option value="25">25条/页</option>
+	    <option value="30">30条/页</option>
+	  </select>
+	  <span>上一页</span>
+	  <input type="text" placeholder="总页数">
+		<span>下一页</span>
+		<div class="page"></div>
+	</div>
+	<form class="min_window new">
+	  <h2>新增</h2>
+	  <ul>
+		<li><span>资产类别名称</span><input type="text" name="category"></li>
+		<li><span>资产编号</span><input type="text" name="assetno"></li>
+	  </ul>
+	  <div>
+	    <p class="btn_box">
+		  <span class="btn">确定</span>
+	      <span class="btn">取消</span>
+		</p>
+	  </div>
+	</form>
+	<div class="mask"></div>
+  </body>
+  <script src="js/jquery-3.2.1.js"></script>
+  <script src="js/base.js"></script>
+  <script src="js/unify.js"></script>
+  <script>
+    $(function(){
+	  table_box("table","input,序号,资产类别名称,资产编号,创建人,创建日期");
+	  var select="";
+	  var fields="input,id,category,assetno,founder,dateCreate";
+	  var fields_="category,assetno";
+	  /*获取第一页数据*/
+	  data("http://guding.seamantf.com/classlibrary/select","get","",select,fields);
+	  /*页数回车按钮*/
+	  $(".article input").on("keyup",function(e){
+	    if(e.keyCode==13){
+		  data("http://guding.seamantf.com/classlibrary/select","get","",select,fields);
+		}
+	  })
+	  /*上一页按钮*/
+	  $(".article span:nth-child(2)").on("click",function(){
+		data("http://guding.seamantf.com/classlibrary/select","get","-",select,fields);
+	  })
+	  /*下一页按钮*/
+	  $(".article span:nth-child(4)").on("click",function(){
+	    data("http://guding.seamantf.com/classlibrary/select","get","+",select,fields);
+	  })
+	  /*当页显示数改变时*/
+	  $(".article select").on("change",function(){
+	    data("http://guding.seamantf.com/classlibrary/select","get","",select,fields);
+	  })
+	  /*确定新增*/
+	  $(".btn:contains(新增)").on("click",function(){
+        _btn("new");
+      })
+	  $(".new .btn:contains(取消)").on("click",function(){
+        _btn("new");
+      })
+	  $(".new .btn:contains(确定)").on("click",function(){
+	    _data("http://guding.seamantf.com/classlibrary/insert","new",fields_);
+	  })
+	  /*删除数据*/
+	  table_effect("table");
+	  $(".btn:contains(删除)").on("click",function(){
+		if(confirm("是否删除所选数据")){
+		  var data={"id":table_checked("table","2","attr","data-id").split(",")};
+		  $.ajax({
+		    url:"http://guding.seamantf.com/classlibrary/delete",
+		    type:"POST",
+		    data:JSON.stringify(data),
+		    headers:{'Content-Type':'application/json;charset=UTF-8'},
+		    success:function(res){
+		      alert(res.msg);
+		      window.location.reload();
+		    }
+	      })
+		};
+	  })
+	  var input=$("input")
+	  for(var i=0;i<input.length;i++){
+	    input.eq(i).attr("autocomplete","off")
+	  }
+	})
+  </script>
+</html>

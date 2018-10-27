@@ -1,0 +1,199 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+	<title>登记记录</title>
+	<link rel="stylesheet" href="css/reset.css">
+	<link rel="stylesheet" href="css/unify.css">
+  </head>
+  <body>
+    <h1>资产登记列表</h1>
+	<div class="btn_box">
+	  <span class="btn">新增</span>
+	  <span class="btn">查询</span>
+	  <span class="btn">登记导入</span>
+	  <span class="btn">打印二维码</span>
+	</div>
+	<form class="input_box">
+	  <ul>
+	    <li><span>资产名称</span><select name="assetName"></select></li>
+	    <li><span>购置方式</span><input type="text" name="wayBuy"></li>
+	    <li><span>开始时间</span><input type="date" name="dateStart"></li>
+	    <li><span>结束时间</span><input type="date" name="dateEnd"></li>
+	  </ul>
+	</form>
+	<table class="table">
+	  <thead></thead>
+	  <tbody></tbody>
+	</table>
+	<div class="article">
+	  <select>
+	    <option value="10">10条/页</option>
+	    <option value="15">15条/页</option>
+	    <option value="20">20条/页</option>
+	    <option value="25">25条/页</option>
+	    <option value="30">30条/页</option>
+	  </select>
+	  <span>上一页</span>
+	  <input type="text" placeholder="总页数">
+		<span>下一页</span>
+		<div class="page"></div>
+	</div>
+	<form class="min_window new">
+	  <h2>新增</h2>
+	  <ul>
+	    <li><span><i>*</i>资产名称</span><select name="assetName"></select></li>
+	    <li><span><i>*</i>资产编号</span><input type="text" name="assetNo" disabled></input></li>
+	    <li><span>规格</span><input type="text" name="specifications"></li>
+	    <li><span>型号</span><input type="text" name="modelsize"></li>
+	    <li><span>生产厂家</span><input type="text" name="manufacturer"></li>
+	    <li><span>生厂日期</span><input type="date" name="dateProduce"></li>
+	    <li><span>金额</span><input type="text" placeholder="元" name="amount"></li>
+	    <li><span>购置日期</span><input type="date" name="dateBuy"></li>
+	    <li><span>购置方式</span><input type="text" name="wayBuy"></li>
+	    <li><span><i>*</i>经办人</span><input type="text" name="agent"></li>
+	    <li><span>备注</span><input type="text" name="remark"></li>
+	    <li><span><i>*</i>附件</span><input type="text" name="fileurl" placeholder="选择上传文件"></li>
+	  </ul>
+	  <div>
+	    <p class="btn_box">
+		  <span class="btn">确定</span>
+	      <span class="btn">取消</span>
+		</p>
+	  </div>
+	</form>
+	<form class="min_window amend">
+	  <h2>修改</h2>
+	  <ul>
+	    <li><span><i>*</i>资产名称</span><input type="text" name="assetName" disabled></li>
+	    <li><span><i>*</i>资产编号</span><input type="text" name="assetNo" disabled></li>
+	    <li><span>规格</span><input type="text" name="specifications"></li>
+	    <li><span>型号</span><input type="text" name="modelsize"></li>
+	    <li><span>生产厂家</span><input type="text" name="manufacturer"></li>
+	    <li><span>金额</span><input type="text" placeholder="元" name="amount"></li>
+	    <li><span>生厂日期</span><input type="date" name="dateProduce"></li>
+	    <li><span>购置日期</span><input type="date" name="dateBuy"></li>
+	    <li><span>购置方式</span><input type="text" name="wayBuy"></li>
+	    <li><span><i>*</i>经办人</span><input type="text" name="agent"></li>
+		<li><span>备注</span><input type="text" name="remark"></li>
+		<li><span><i>*</i>附件</span><input type="text" name="fileurl" placeholder="选择上传文件"></li>
+	  </ul>
+	  <div>
+	    <p class="btn_box">
+		  <span class="btn">确定</span>
+	      <span class="btn">取消</span>
+		</p>
+	  </div>
+	</form>
+	<form class="file">
+	  <input type="file" name="file" style="display:none;" multiple>
+	</form>
+	<img src="" class="window_img">
+	<div class="mask"></div>
+  </body>
+  <script src="js/jquery-3.2.1.js"></script>
+  <script src="js/base.js"></script>
+  <script src="js/unify.js"></script>
+  <script>
+    $(function(){
+	  table_box("table","input,序号,资产名称,资产编号,规格,型号,生产厂家,金额(元),生产日期,购置日期,购置方式,经办人,备注,附件,二维码,创建人,创建日期");
+	  var fields="input,id,assetName,assetNo,specifications,modelsize,manufacturer,amount,dateProduce,dateBuy,wayBuy,agent,remark,fileurl,picurl,founder,createDate";
+	  var fields_="agent,amount,{'select':'assetName'},assetNo,dateBuy,dateProduce,manufacturer,modelsize,specifications,wayBuy,fileurl,remark";
+	  var _fields="agent,amount,assetName,assetNo,dateBuy,dateProduce,manufacturer,modelsize,specifications,wayBuy,fileurl,remark";
+	  var select="{'select':'assetName'},wayBuy,dateStart,dateEnd";
+	  var required="assetNo,assetName,agent,fileurl";
+	  /*获取第一页数据*/
+	  data("http://guding.seamantf.com/assets/selectall","get","",select,fields);
+	  /*查询搜索内容数据*/
+	  $(".btn:contains(查询)").on("click",function(){
+	    data("http://guding.seamantf.com/assets/search","select",$(this).text(),select,fields);
+	  })
+	  /*回车查询内容*/
+	  $(".input_box input").on("keyup",function(e){
+		if(e.keyCode==13){
+		  data("http://guding.seamantf.com/assets/search","select","",select,fields);
+		}
+	  })
+	  /*改变查询内容*/
+	  $(".input_box select").on("change",function(e){
+		data("http://guding.seamantf.com/assets/search","select","",select,fields);
+	  })
+	  /*页数回车按钮*/
+	  $(".article input").on("keyup",function(e){
+	    if(e.keyCode==13){
+		  data("http://guding.seamantf.com/assets/search","select","",select,fields);
+		};
+	  })
+	  /*上一页按钮*/
+	  $(".article span:nth-child(2)").on("click",function(){
+		data("http://guding.seamantf.com/assets/search","select","-",select,fields);
+	  })
+	  /*下一页按钮*/
+	  $(".article span:nth-child(4)").on("click",function(){
+	    data("http://guding.seamantf.com/assets/search","select","+",select,fields);
+	  })
+	  /*当页显示数改变时*/
+	  $(".article select").on("change",function(){
+	    data("http://guding.seamantf.com/assets/search","select","",select,fields);
+	  })
+	  /*确定新增*/
+	  $(".new .btn:contains(确定)").on("click",function(){
+	    _data("http://guding.seamantf.com/assets/insert","new",fields_,required);
+	  })
+	  /*确定修改*/
+	  $(".amend .btn:contains(确定)").on("click",function(){
+	    _data("http://guding.seamantf.com/assets/update","amend",_fields,required);
+	  })
+	  /*下载二维码*/
+	  table_effect("table");
+	  $(".btn:contains(打印二维码)").on("click",function(){
+		if($(".table input[type=checkbox]:checked").length>0){
+		  var src=table_checked("table","15","attr","src");
+		  window.open("code.html?src="+src); 
+		}else{
+		  alert("请勾选二维码");
+		};
+	  })
+	  /*查看附件*/
+	  $(".table tbody").on("click","span.btn",function(){
+		var src=$(this).attr("src");
+		window.open("a_pdf_info.html?src="+src);
+	  })
+	  /*回车查询内容*/
+	  $(".input_box input").on("keyup",function(e){
+		if(e.keyCode==13){
+		  data("http://guding.seamantf.com/assets/search","select","",select,fields);
+		}
+	  })
+	  /*改变查询内容*/
+	  $(".input_box select").on("change",function(e){
+		data("http://guding.seamantf.com/assets/search","select","",select,fields);
+	  })
+	  /*当页显示数改变时*/
+	  $(".article select").on("change",function(){
+	    var is=is_input_val();
+		if(is){
+		  data("http://guding.seamantf.com/assets/search","select","",select,fields);
+		}else{
+		  data("http://guding.seamantf.com/assets/selectall","get","",select,fields);
+		}
+	  })
+	  /*忽略*/
+	  hidden("register");
+	  option("sort");
+	  $(".table tbody").on("click","img",function(){
+	    $(".mask").fadeToggle();
+		$(".window_img").fadeToggle();
+		$(".window_img").attr("src",$(this).attr("src"));
+	  })
+	  $(".mask").on("click",function(){
+	    $(".mask").fadeToggle();
+		$(".window_img").fadeToggle();
+	  })
+	  var input=$("input")
+	  for(var i=0;i<input.length;i++){
+	    input.eq(i).attr("autocomplete","off")
+	  }
+	})
+  </script>
+</html>

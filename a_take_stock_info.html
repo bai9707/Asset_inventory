@@ -1,0 +1,85 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+	<title>盘点详情</title>
+	<link rel="stylesheet" href="css/reset.css">
+	<link rel="stylesheet" href="css/unify.css">
+	<style>
+	  .btn_box{
+	    text-align:right;
+	  }
+	  .input_box li span{
+	    display:inline-block;
+		width:20%;
+	  }
+	  .input_box:last-child{
+	    margin-bottom:120px;
+	  }
+	</style>
+  </head>
+  <body>
+    <h1>资产盘点详情</h1>
+	<div class="btn_box">
+	  <span class="btn">退出</span>
+	</div>
+	<h2>资产信息</h2>
+	<div class="input_box">
+	  <ul>
+	    <li><span>资产编号</span><input type="text" disabled></li>
+	    <li><span>资产名称</span><input type="text" disabled></li>
+	    <li><span>规格</span><input type="text" disabled></li>
+	    <li><span>型号</span><input type="text" disabled></li>
+	    <li><span>金额</span><input type="text" disabled></li>
+	    <li><span>生产厂家</span><input type="text" disabled></li>
+	    <li><span>生厂日期</span><input type="text" disabled></li>
+	    <li><span>购置日期</span><input type="text" disabled></li>
+	    <li><span>购置方式</span><input type="text" disabled></li>
+	    <li><span>经办人</span><input type="text" disabled></li>
+	    <li><span>资产状态</span><input type="text" disabled></li>
+	    <li><span>盘点状态</span><input type="text" disabled></li>
+	    <li><span>盘点人</span><input type="text" disabled></li>
+	    <li><span>盘点日期</span><input type="text" disabled></li>
+	  </ul>
+	</div>
+	<div class="min_window">
+	  <img src="">
+	</div>
+	<div class="mask"></div>
+  </body>
+  <script src="js/jquery-3.2.1.js"></script>
+  <script src="js/base.js"></script>
+  <script>
+    $(function(){
+	  $.ajax({
+	    url:"http://guding.seamantf.com/pandassets/details",
+		type:"POST",
+		data:JSON.stringify({"assetNo":get_url("id")}),
+		headers:{'Content-Type':'application/json;charset=UTF-8'},
+		success:function(res){
+		  var data=res.data.assets;
+		  var arr=["assetNo","assetName","specifications","modelsize","amount","manufacturer","dateProduce","dateBuy","wayBuy","agent","status","picurl"];
+		  for(var i=0;i<arr.length;i++){
+		    $($(".input_box")[0]).find("input").eq(i).val(data[arr[i]]);
+		  }
+		  $("img").attr("src",data.picurl);
+		  var pandassets=res.data.pandassets;
+		  $($(".input_box")[0]).find("input").eq(11).val(pandassets.pandstatus);
+		  $($(".input_box")[0]).find("input").eq(12).val(pandassets.panduser);
+		  $($(".input_box")[0]).find("input").eq(13).val(pandassets.pandate);
+		  var useassets=res.data.useassets;
+		  if(useassets){
+		    var html="<h2>资产在"+useassets.dateUse+"至当前使用情况如下</h2><div class='input_box'><ul><li><span>使用部门</span><input type='text' disabled value="+useassets.departure+"></li><li><span>使用人</span><input type='text' disabled value="+useassets.user+"></li><li><span>领用开始日期</span><input type='text' disabled value="+useassets.dateUse+"></li><li><span>领用结束日期</span><input type='text' disabled value='当前'></li></ul></div>";
+		  $("body").append(html);
+		  }
+		}
+	  })
+	  $(".btn:contains(查看附件)").on("click",function(){
+	    window.open("a_pdf_info.html");
+	  })
+	  $(".btn:contains(退出)").on("click",function(){
+	    window.location.href="Asset_take_stock.html";
+	  })
+	})
+  </script>
+</html>

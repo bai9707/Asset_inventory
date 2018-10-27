@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+	<meta name="renderer" content="webkit|ie-comp|ie-stand">
+	<link rel="shortcut icon" href="img/favicon.ico" type="image/x-icon"/>
+	<meta name="renderer" content="webkit">
+    <title>后台管理系统</title>
+    <link rel="stylesheet" href="css/reset.css">
+    <style>
+        body,html{
+            height:100%;
+        }
+        .main .title{        
+            background:#41a8ee;
+            position:relative;
+            color: #fff;
+            line-height:60px;
+            box-sizing:border-box;
+            font-size:26px;
+            text-align: center;
+            letter-spacing: 6px;
+        }
+        .main{
+            height:100%;
+            background: url(img/bg.jpg) no-repeat;
+            position:relative;
+            background-size: 100%;
+        }
+        .main>.box{
+            position:absolute;
+            margin:auto;
+            top:0;
+            bottom:200px;
+            left:0;
+            right:0;
+            width:450px;
+            height:300px;
+            background:#fff;
+            border-radius:5px;
+            border:#41a8ee 1px solid;
+        }
+        .box>.icon{
+            height:30px;
+        }
+        .box>.icon>span{
+            display:inline-block;
+            width:10px;
+            height:10px;
+            float:left;
+            margin:10px 0px 10px 10px;
+            border-radius:50%;
+            background:#FE9A38;
+        }
+        .box>.icon>span:last-child{
+            background:#F60C0B;
+        }
+        .box>.icon>span:first-child{
+            background:#24BC11;
+        }
+        .box>.input_box ul{
+            margin-top:5%;
+        }
+        .box>.input_box li>span{
+            font-size:18px;
+            line-height:60px;
+            margin-left:20%;
+            color: #384653;
+            font-family: "微软雅黑";
+        }
+        .box>.input_box li>input{
+            height:35px;
+            background:#f5f5f5;
+            padding-left:10px;
+            padding-right:10px;
+            border:1px solid #e5e5e5;
+            font-size:16px;
+        }
+        .box>.input_box ul>a{
+            background:#41a8ee;
+            display:block;
+            width:30%;
+            height:40px;
+            line-height:40px;
+            text-align:center;
+            margin:30px auto;
+            border-radius:5px;
+            font-size:16px;
+            color:#fff;
+        }
+    </style>
+</head>
+<body>
+  <!-- <div class="title"> -->
+      <!-- <span>固定资产管理后台</span> -->
+  <!-- </div> -->
+  <div class="main">
+      <div class="box">
+	      <div class="title">
+            <span>微播固定资产管理系统</span>
+          </div>
+          <!-- <div class="icon"> -->
+              <!-- <span></span> -->
+              <!-- <span></span> -->
+              <!-- <span></span> -->
+          <!-- </div> -->
+          <div class="input_box">
+              <ul>
+                  <li><span>账户：</span><input type="text"></li>
+                  <li><span>密码：</span><input type="password"></li>
+                  <a href="#">立即登录</a>
+              </ul>
+          </div>
+      </div>
+  </div>
+</body>
+<script src="js/jquery-3.2.1.js"></script>
+<script>
+  $(function(){
+	$("input[type=password]").on("keyup",function(e){
+	  if(e.keyCode==13){
+	    login();
+	  }
+	})
+    $(".input_box a").on("click",function(e){
+	  e.preventDefault();
+	  login();
+	})
+	function login(){
+	  var name=$("input").eq(0).val();
+	  var pass=$("input").eq(1).val();
+	  $.ajax({
+	    url:"http://guding.seamantf.com/user/login",
+		type:"POST",
+		data:JSON.stringify({"userid":name,"userpass":pass}),
+		headers:{'Content-Type':'application/json;charset=UTF-8'},
+		success:function(res){
+		  if(res.code==100){
+			alert(res.data.user.userid+"登陆成功");
+			window.sessionStorage.setItem('user',res.data.user.userid);
+		    window.location.href="index.html";
+		  }else{
+		    alert(res.msg);
+		  }
+		},
+		error:function(err){
+		  alert("无法与服务器连接");
+		}
+	  })
+	}
+  })
+</script>
+</html>

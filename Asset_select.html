@@ -1,0 +1,160 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+	<title>查询记录</title>
+	<link rel="stylesheet" href="css/reset.css">
+	<link rel="stylesheet" href="css/unify.css">
+	<style>
+	  .table tr{
+	    cursor:pointer;
+	  }
+	  .min_window{
+		width:15%;
+		height:220px;
+	  }
+	  .min_window h2{
+	    width:50%;
+        text-align:center;
+	  }
+	  .min_window li{
+	    width:100%;
+	  }
+	  .min_window li span{
+	    width:25%;
+		margin-right:5%;
+	  }
+	  .min_window li input{
+	    width:65%;
+	  }
+	</style>
+  </head>
+  <body>
+    <h1>资产查询列表</h1>
+	<div class="btn_box">
+	  <span class="btn">查询</span>
+	</div>
+	<div class="input_box">
+	  <ul>
+	    <li><span>资产名称</span><select name="assetName"></select></li>
+	    <li><span>资产编号</span><input name="assetNo"></li>
+	    <li><span>所在部门</span><select name="departure"></select></li>
+	    <li><span>&nbsp&nbsp&nbsp&nbsp使用人</span><input name="user"></li>
+	    <li><span>领用状态</span><select name="lystatus"></select></li>
+	    <li><span>设备状态</span><select name="status"></select></li>
+	  </ul>
+	</div>
+	<table class="table">
+	  <thead></thead>
+	  <tbody></tbody>
+	</table>
+	<div class="article">
+	  <select>
+	    <option value="10">10条/页</option>
+	    <option value="15">15条/页</option>
+	    <option value="20">20条/页</option>
+	    <option value="25">25条/页</option>
+	    <option value="30">30条/页</option>
+	  </select>
+	  <span>上一页</span>
+	  <input type="text" placeholder="总页数">
+		<span>下一页</span>
+		<div class="page"></div>
+	</div>
+	<form class="min_window" onsubmit="return false;">
+	  <h2>修改</h2>
+	  <ul>
+	    <li><span>使用人</span><input name="user"></li>
+	  </ul>
+	  <div>
+	    <p class="btn_box">
+		  <span class="btn">确定</span>
+	      <span class="btn">取消</span>
+		</p>
+	  </div>
+	</form>
+	<div class="mask"></div>
+  </body>
+  <script src="js/jquery-3.2.1.js"></script>
+  <script src="js/base.js"></script>
+  <script src="js/unify.js"></script>
+  <script>
+    $(function(){
+	  table_box("table","序号,资产编号,资产名称,所在部门,使用人,领用状态,移交状态,借出状态,借出部门,设备状态,备注");
+	  var fields="id,assetNo,assetName,departure,user,lystatus,yjstatus,borrowStatus,borrowDeparture,status,remark"
+	  var select="{'select':'assetName'},{'select':'departure'},{'select':'lystatus'},{'select':'status'},assetNo,user";
+	  /*获取第一页数据*/
+	  data("http://guding.seamantf.com/assetsStatus/selectall","get","",select,fields);
+	  /*查询搜索内容数据*/
+	  $(".btn:contains(查询)").on("click",function(){
+	    data("http://guding.seamantf.com/assetsStatus/search","select",$(this).text(),select,fields);
+	  })
+	  /*回车查询内容*/
+	  $(".input_box input").on("keyup",function(e){
+		if(e.keyCode==13){
+		  data("http://guding.seamantf.com/assetsStatus/search","select","",select,fields);
+		}
+	  })
+	  /*改变查询内容*/
+	  $(".input_box select").on("change",function(e){
+		data("http://guding.seamantf.com/assetsStatus/search","select","",select,fields);
+	  })
+	  /*页数回车按钮*/
+	  $(".article input").on("keyup",function(e){
+	    if(e.keyCode==13){
+		  data("http://guding.seamantf.com/assetsStatus/search","select","",select,fields);
+		};
+	  })
+	  /*上一页按钮*/
+	  $(".article span:nth-child(2)").on("click",function(){
+		data("http://guding.seamantf.com/assetsStatus/search","select","-",select,fields);
+	  })
+	  /*下一页按钮*/
+	  $(".article span:nth-child(4)").on("click",function(){
+	    data("http://guding.seamantf.com/assetsStatus/search","select","+",select,fields);
+	  })
+	  /*当页显示数改变时*/
+	  $(".article select").on("change",function(){
+	    data("http://guding.seamantf.com/assetsStatus/search","select","",select,fields);
+	  })
+	  /*双击修改使用人*/
+	  $(".table tbody").on("dblclick","tr",function(){
+		$(".min_window input[name=user]").val($(this).find("td").eq(4).text())
+	    _btn("min_window");
+		var thiz=$(this);
+		$(".btn:contains(确定)").on("click",function(){
+          var data_=fields.split(",");
+		  var data={};
+		  for(var i=0;i<data_.length;i++){
+			data[data_[i]]=thiz.find("td").eq(i).text();
+		  }
+		  data.id=thiz.find("td:first-child").attr("data-id");
+		  data.user=$(".min_window input[name=user]").val();
+		  data.founder=sessionStorage.getItem("user");
+		  $.ajax({
+		    url:"http://guding.seamantf.com/assetsStatus/update",
+			type:"POST",
+			data:JSON.stringify(data),
+			headers:{'Content-Type':'application/json;charset=UTF-8'},
+			success:function(res){
+			  alert(res.msg);
+			  window.location.reload();
+			}
+		  })
+        })
+	  })
+	  $(".btn:contains(取消)").on("click",function(){
+        _btn("min_window");
+      })
+	  var recievingDepr=option("section");
+	  $("select[name=departure]").html(recievingDepr);
+	  $("select[name=lystatus]").html("<option value=''>所有状态</option>"+option("已领用,未领用"));
+	  $("select[name=status]").html("<option value=''>所有状态</option>"+option("闲置,使用中,损坏,维修中,报废"));
+	  option("sort");
+	  var input=$("input");
+	  for(var i=0;i<input.length;i++){
+	    input.eq(i).attr("autocomplete","off")
+	  }
+	})
+  </script>
+</html>

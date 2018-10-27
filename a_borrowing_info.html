@@ -1,0 +1,72 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>移交详情页</title>
+  <link rel="stylesheet" href="css/reset.css">
+  <link rel="stylesheet" href="css/unify.css">
+  <style>
+    .input_box li span{
+	  display:inline-block;
+      width:15%;
+	}
+	i{
+	  margin-top:10px;
+	}
+  </style>
+</head>
+<body>
+  <h1>新增移交</h1>
+  <div class="btn_box">
+    <p class="btn_box">
+	  <span class="btn">确定</span>
+	  <span class="btn">退出</span>
+	</p>
+  </div>
+  <div class="input_box">
+	<ul>
+	  <li><span><i>*</i>移交部门</span><select name="transferDepr"></select></li>
+	  <li><span><i>*</i>接收部门</span><select name="recievingDepr"></select></li>
+	  <li><span><i>*</i>资产名称</span><select name="assetname"></select></li>
+	  <li><span><i>*</i>资产编号</span><select name="assetno"></select></li>
+	  <li><span><i>*</i>移交人</span><input name="transferMan"></li>
+	  <li><span><i>*</i>接收人</span><input name="recievingMan"></li>
+	  <li><span><i>*</i>移交日期</span><input type="date" name="transferDate"></li>
+	  <li><span>经办人</span><input name="agent"></li>
+	  <li><span>附件</span><input type="text" name="fileurl" placeholder="选择上传文件"></li>
+	  <li class="textarea"><span>备注</span><textarea disabled name="remark" cols="30" rows="10"></textarea></li>
+	</ul>
+  </div>
+  <form class="file">
+	<input type="file" name="file" style="display:none;" multiple>
+  </form>
+</body>
+<script src="js/jquery-3.2.1.js"></script>
+<script src="js/base.js"></script>
+<script src="js/unify.js"></script>
+<script>
+  $(function(){
+    $(".btn:contains(退出)").on("click",function(){
+      window.location.href="Asset_borrowing.html";
+	})
+	var fields_="{'select':'transferDepr'},{'select':'recievingDepr'},{'select':'assetname'},{'select':'assetno'},transferMan,recievingMan,transferDate,agent,fileurl,remark";
+	var required="transferDepr,recievingDepr,assetname,assetno,transferMan,recievingMan";
+	select_("http://guding.seamantf.com/transfer/selectNo");
+	/*确定新增*/
+	$(".btn:contains(确定)").on("click",function(){
+	  _data("http://guding.seamantf.com/transfer/insert","input_box",fields_,required);
+	})
+	/*查看附件*/
+	$(".btn:contains(查看附件)").on("click",function(){
+	  var src=$("input[name=fileurl]").val();
+	  if(src){
+	    window.open(src);
+	  };
+	})
+	var input=$("input")
+	for(var i=0;i<input.length;i++){
+	  input.eq(i).attr("autocomplete","off")
+	}
+  })
+</script>
+</html>

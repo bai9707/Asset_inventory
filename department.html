@@ -1,0 +1,101 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+	<title>部门记录</title>
+	<link rel="stylesheet" href="css/reset.css">
+    <link rel="stylesheet" href="css/unify.css">
+    <style>
+      li{
+        height:50px;
+        display:inline-block;
+        line-height:50px;
+      }
+      i{
+        cursor:pointer;
+        display:inline-block;
+        width:25px;
+        height:25px;
+        position:relative;
+        right:25px;
+        bottom:10px;
+        background:url("img/x.png");
+        background-size:100%;
+      }
+      input{
+        height:30px;
+        width:130px;
+        line-height: 30px;
+        box-sizing:border-box;
+        background:#41a8ee;
+        color:#fff;
+        font-size:14px;
+        vertical-align:middle;
+        text-align:center;
+        padding:0 10px;
+        border-radius: 4px;
+        margin-right:10px;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>部门设置列表</h1>
+    <div class="btn_box">
+      <span class="btn">保存</span>
+      <span class="btn">新增部门</span>
+    </div>
+    <ul></ul>
+  </body>
+  <script src="js/jquery-3.2.1.js"></script>
+  <script src="js/base.js"></script>
+  <script src="js/unify.js"></script>
+  <script>
+    $(function(){
+      $.ajax({
+        url:"http://guding.seamantf.com/departure/select",
+        type:"POST",
+        headers:{"Content-Type":"application/json;charset=UTF-8"},
+        success:function(res){
+          var data=res.data
+          if(res.code==100){
+            var html="";
+            for(var i=0;i<data.length;i++){
+              html+="<li><input value="+data[i]+" disabled><i></i></li>";
+            }
+            $("ul").html(html);
+          };
+        }
+      })
+      $(".btn:contains(新增部门)").on("click",function(){
+        var li="<li><input><i></i></li>";
+        $("ul").append(li);
+      })
+      $("ul").on("click","i",function(){
+        $(this).parent().remove();
+      })
+      $(".btn:contains(保存)").on("click",function(){
+        var arr=[];
+        var input=$("input");
+        for(var i=0;i<input.length;i++){
+          if(input.eq(i).val()){
+            arr.push(input.eq(i).val());
+          }
+        }
+        $.ajax({
+            url:"http://guding.seamantf.com/departure/update",
+            type:"POST",
+            data:JSON.stringify(arr),
+            headers:{'Content-Type':'application/json;charset=UTF-8'},
+            success:function(res){
+              if(res.code==100){
+                alert(res.msg);
+                window.location.reload();
+              }else{
+                alert("请重新提交");
+              }
+            }
+        })
+	    })
+    })
+  </script>
+</html>

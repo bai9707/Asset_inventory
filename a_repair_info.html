@@ -1,0 +1,111 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>维修详情页</title>
+  <link rel="stylesheet" href="css/reset.css">
+  <link rel="stylesheet" href="css/unify.css">
+  <style>
+    .input_box li span{
+	  display:inline-block;
+      width:15%;
+	}
+	i{
+	  margin-top:10px;
+	}
+  </style>
+</head>
+<body>
+  <h1>新增维修</h1>
+  <div class="btn_box">
+    <p class="btn_box">
+	  <span class="btn">确定</span>
+	  <span class="btn">退出</span>
+	</p>
+  </div>
+  <div class="input_box">
+	<ul>
+	  <li><span><i>*</i>资产名称</span><select name="assetName"></select></li>
+	  <li><span><i>*</i>资产编号</span><select name="assetNo"></select></li>
+	  <li><span><i>*</i>维修类型</span><select name="fixtype"></select></li>
+	  <li><span><i>*</i>申请部门</span><select name="departure"></select></li>
+	  <li><span><i>*</i>维修状态</span><select name="status"></select></li>
+	  <li><span><i>*</i>申请人</span><input name="user"></li>
+	  <li><span>维修方</span><input name="companyFix"></li>
+	  <li><span>附件上传</span><input type="text" name="fileurl" placeholder="选择上传文件"></li>
+	  <li><span>维修完成日期</span><input type="date" name="dateFix"></li>
+	  <li><span>附件查看</span><span class="btn" style="width:auto;">查看附件</span></li>
+	  <li class="textarea"><span><i>*</i>维修原因</span><textarea name="fixreson" cols="30" rows="10"></textarea></li>
+	  <li class="textarea"><span>备注</span><textarea name="remark" cols="30" rows="10"></textarea></li>
+	</ul>
+  </div>
+  <form class="file">
+	<input type="file" name="file" style="display:none;" multiple>
+  </form>
+</body>
+<script src="js/jquery-3.2.1.js"></script>
+<script src="js/base.js"></script>
+<script src="js/unify.js"></script>
+<script>
+  $(function(){
+    $(".btn:contains(退出)").on("click",function(){
+      window.location.href="Asset_repair.html";
+	})
+	var fields_="{'select':'assetName'},{'select':'assetNo'},{'select':'fixtype'},{'select':'departure'},{'select':'status'},user,companyFix,fileurl,dateFix,fixreson,remark";
+	var required="assetName,assetNo,fixtype,departure,status,user,fixreson";
+	if(get_url("type")=="new"){
+	  select_("http://guding.seamantf.com/recordInfo/selectNo");
+	  $(".btn:contains(确定)").on("click",function(){
+	    _data("http://guding.seamantf.com/recordInfo/insert","input_box",fields_,required);
+	  })
+	}else if(get_url("type")=="amend"&&get_url("id")){
+	  disabled(true);
+	  $.ajax({
+	    url:"http://guding.seamantf.com/recordInfo/details",
+		type:"POST",
+		data:JSON.stringify({"id":get_url("id")}),
+		headers:{'Content-Type':'application/json;charset=UTF-8'},
+		success:function(res){
+		  if(res.code==100){
+		    var data=res.data.assets;
+			local(data);
+		  }
+		}
+	  })
+	  $("h1").text("维修详情/修改");
+	  $("p.btn_box").prepend("<span class='btn'>修改</span>");
+	  $(".btn:contains(修改)").on("click",function(){
+		//select_("http://guding.seamantf.com/recordInfo/selectNo");
+		$("select[name=fixtype]").html(option("硬件维修,软件维修"));
+		$("select[name=status]").html(option("未处理,维修中,已修好,报废"));
+		var html=$("[name=departure]");
+		$(".input_box select[name=departure]").html(html.html()+option("section","is"));
+		$("option:contains("+html.val()+"):last").remove();
+	    disabled(false);
+		$(".btn:contains(确定)").on("click",function(){
+	      _data("http://guding.seamantf.com/recordInfo/update","input_box",fields_,required);
+	    })
+	  })
+	  $(".btn:contains(查看附件)").on("click",function(){
+	    var src=$("input[name=fileurl]").val();
+		if(src){
+		  window.open(src);
+		};
+	  })
+	}else{
+	  window.location.href="Asset_repair.html";
+	}
+	$(".input_box [name=status]").on("change",function(){
+	  if($(this).val()=="已修好"){
+	    $("span:contains(维修完成日期)").prepend("<i>*</i>")
+	  }else{
+	    $("span:contains(维修完成日期) i").remove();
+	  };
+	})
+	var input=$("input")
+	for(var i=0;i<input.length;i++){
+	  input.eq(i).attr("autocomplete","off")
+	}
+  })
+</script>
+</html>

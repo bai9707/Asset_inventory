@@ -1,0 +1,144 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+	<title>主页</title>
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<meta name="viewport" content="width=device-width,initial-scale=1.0">
+	<link rel="shortcut icon" href="img/favicon.ico" type="image/x-icon"/>
+	<link rel="stylesheet" href="css/bootstrap.min.css">
+	<link rel="stylesheet" href="css/base.css">
+	<link rel="stylesheet" href="css/index.css">
+	<!--[if lt IE 9]>
+    <script src="js/html5shiv.min.js"></script>
+    <script src="js/respond.min.js"></script>
+    <![endif]-->
+  </head>
+  <body>
+    <div id="top">
+	  <div class="simulate logo">
+	     <div class="nav_logobox"><div class="nav_logo"></div></div>
+	  </div>
+	  <div class="simulate broadside">
+		<span class="title">固定资产管理系统</span>
+		<div class="exit">
+			<span class="exit-icon"></span>
+			<span class="exit-text">退出登录</span>
+		</div>
+	  </div>
+	</div>
+	<div id="nav" class="col-md-2 col-sm-3">
+	  <div class="nav_reactive"></div>
+	  <div class="nav_menu">
+	    <ul class="menu">
+		  <li class="active">
+		    <a href="#">
+		      <div>
+			    <span class="ulicon glyphicon glyphicon-th-list"></span>
+			    <span class="ulmenu">资产类别</span>
+			  </div>
+			</a>
+			</li>
+			<li>
+				<a href="#">
+					<div>
+					  <span class="ulicon glyphicon glyphicon-check"></span>
+					  <span class="ulmenu">部门设置</span>
+					</div>
+				</a>
+			</li>
+		  <li>
+		    <a href="#">
+		  	  <div>
+			    <span class="ulicon glyphicon glyphicon-record"></span>
+			    <span class="ulmenu">资产登记</span>
+			  </div>
+			</a>
+		  </li>
+		  <li>
+		    <a href="#">
+		  	  <div>
+			    <span class="ulicon glyphicon glyphicon-upload"></span>
+			    <span class="ulmenu">资产领用</span>
+			  </div>
+			</a>
+		  </li>
+		  <li>
+		    <a href="#">
+		      <div>
+			    <span class="ulicon glyphicon glyphicon-wrench"></span>
+			    <span class="ulmenu">资产维修</span>
+			  </div>
+			</a>
+		  </li>
+		  <li>
+		    <a href="#">
+		      <div>
+			    <span class="ulicon glyphicon glyphicon-sort"></span>
+			    <span class="ulmenu">资产移交</span>
+			  </div>
+			</a>
+		  </li>
+		  <li>
+		    <a href="#">
+		      <div>
+			    <span class="ulicon glyphicon glyphicon-bookmark"></span>
+			    <span class="ulmenu">资产借还</span>
+			  </div>
+			</a>
+		  </li>
+		  <li>
+		    <a href="#">
+		      <div>
+			    <span class="ulicon glyphicon glyphicon-search"></span>
+			    <span class="ulmenu">资产查询</span>
+			  </div>
+			</a>
+		  </li>
+		  <li>
+		    <a href="#">
+		      <div>
+			    <span class="ulicon glyphicon glyphicon-check"></span>
+			    <span class="ulmenu">资产盘点</span>
+			  </div>
+			</a>
+			</li>
+		</ul>
+	  </div>
+	</div>
+	<div id="right"></div>
+	<iframe id="main" name="m_window" class="col-md-10 col-sm-9 col-md-offset-2 col-sm-offset-3" frameborder="0" src="Asset_category.html"></iframe>
+  </body>
+  <script src="js/jquery-3.2.1.js"></script>
+  <script src="js/bootstrap.min.js"></script>
+  <script src="js/base.js"></script>
+  <script>
+    $(function(){
+	  $("a").on("click",function(e){
+	    e.preventDefault();
+	  })
+	  var name=sessionStorage.getItem("user");
+	  if(!name){
+	    window.location.href="login.html";
+	  }
+	  $(".nav_menu ul li").on("click",function(){
+	    var list=["Asset_category.html","department.html","Asset_register.html","Asset_recipients.html","Asset_repair.html","Asset_borrowing.html","Asset_return.html","Asset_select.html","Asset_take_stock.html"];
+		m_window.location.href=list[$(this).index()];
+		$(".nav_menu ul li").removeClass("active");
+		$(this).addClass("active");
+	  })
+	  $(".exit-text").on("click",function(){
+	    sessionStorage.removeItem("user");
+		window.location.href="login.html";
+	  })
+	  /*F5刷新*/
+	  //$(document).bind("keydown",function(e){ 
+        //var key=e.keyCode;
+		//if(key==116){ 
+		  //e.preventDefault();
+		  //m_window.location.reload(true);
+        //} 
+      //}); 
+	})
+  </script>
+</html>

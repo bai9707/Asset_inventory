@@ -1,0 +1,107 @@
+﻿/*重置边距*/
+*{
+  margin:0;
+  padding:0;
+}
+/*取消聚焦轮廓*/
+fieldset,img,input,button,select,option,textarea{
+  border:none;
+  outline-style:none;
+}
+/*基础设置*/
+body{
+  font:12px/12px Helvetica,Arial,sans-serif;
+}
+/*防止textarea拖动*/
+textarea{
+  resize:none;
+}
+/*下列标记内外边距为0*/
+p,h1,h2,h3,h4,h5,h6,ul,ol,dl,dd,pre,button{
+  list-style:none;
+}
+/*设置h标签大小*/
+h1,h2,h3,h4,h5,h6{
+  text-decoration:none;
+  font-weight:normal;
+  font-size:100%;
+}
+/**/
+i,em{
+  text-decoration:none;
+  font-style:normal;
+}
+/*a标记-取消默认样式*/
+a,a:link,a:visited,a:hover,a:active{
+  color:#000;
+  text-decoration:none;
+}
+/*图片水平底部贴近*/
+img{
+  vertical-align:bottom;
+}
+/*左浮动*/
+.lt{
+  float:left;
+}
+/*右浮动*/
+.rt{
+  float:right;
+}
+/*清除浮动*/
+.cl{
+  clear:both;
+}
+/*清除外边距和浮动影响*/
+.clear:after{
+  content:"";
+  display:block;
+  clear:both;
+}
+/*表格_a样式*/
+table{
+  width:100%;
+  max-width:100%;
+  text-align:center;
+  vertical-align:middle;
+  border-collapse:collapse;
+  border-spacing:0;
+  font-family:'Open Sans';
+}
+table>thead>tr>th{
+  /*color:#707070;*/
+  font-weight:bold;
+  font-weight:bold;
+  background-color:#41a8ee ;
+  color:#ffffff;
+  font-size:14px;
+}
+table tr input{
+  width:15px;
+  height:15px;
+  vertical-align:middle;
+}
+table>thead>tr>th,
+table>tbody>tr>td{
+  padding:10px;
+  line-height:1.5;
+}
+table>thead>tr{
+  background:linear-gradient(to bottom,#f8f8f8 0,#ececec 100%);
+}
+/*table>tbody>tr:nth-child(odd){*/
+  /*background:#f5f5f5;*/
+/*}*/
+/*table>tbody>tr:nth-child(even){*/
+  /*background:#ffffff;*/
+/*}*/
+table>tbody>tr:hover{
+  background:#d0eafc;
+}
+/*表格_b样式*/
+table>tr:nth-child(odd){
+  background:linear-gradient(to bottom,#f8f8f8 0,#ececec 100%);
+}
+table>tr:nth-child(even)>td:hover{
+  background:#f5f5f5;
+}

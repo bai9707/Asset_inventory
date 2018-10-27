@@ -1,0 +1,89 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>借还详情页</title>
+  <link rel="stylesheet" href="css/reset.css">
+  <link rel="stylesheet" href="css/unify.css">
+  <style>
+    .input_box li span{
+	  display:inline-block;
+      width:15%;
+	}
+	i{
+	  margin-top:10px;
+	}
+  </style>
+</head>
+<body>
+  <h1>新增借还</h1>
+  <div class="btn_box">
+    <p class="btn_box">
+	  <span class="btn">确定</span>
+	  <span class="btn">退出</span>
+	</p>
+  </div>
+  <div class="input_box">
+	<ul>
+	  <li><span><i>*</i>资产名称</span><select name="assetName"></select></li>
+	  <li><span><i>*</i>资产编号</span><select name="assetNo"></select></li>
+	  <li><span><i>*</i>借用部门</span><select name="borrowDeparture"></select></li>
+	  <li><span><i>*</i>借用人</span><input name="borrowUser"></li>
+	  <li><span><i>*</i>借用时间</span><input type="datetime-local" name="borrowDate"></li>
+	  <li><span><i>*</i>经办人</span><input name="agent"></li>
+	  <li class="textarea"><span>备注</span><textarea disabled name="remark" cols="30" rows="10"></textarea></li>
+	</ul>
+  </div>
+</body>
+<script src="js/jquery-3.2.1.js"></script>
+<script src="js/base.js"></script>
+<script src="js/unify.js"></script>
+<script>
+  $(function(){
+    $(".btn:contains(退出)").on("click",function(){
+      window.location.href="Asset_return.html";
+	})
+	var fields_="{'select':'assetName'},{'select':'assetNo'},{'select':'borrowDeparture'},borrowUser,borrowDate,agent";
+	var required="assetName,assetNo,borrowDeparture,borrowUser,borrowDate,agent";
+	if(get_url("type")=="new"){
+	  select_("http://guding.seamantf.com/borrowinfo/selectno");
+	  /*确定新增*/
+	  $(".btn:contains(确定)").on("click",function(){
+	    _data("http://guding.seamantf.com/borrowinfo/insert","input_box",fields_,required);
+	  })
+	}else if(get_url("type")=="amend"&&get_url("id")){
+	  disabled(true);
+	  $.ajax({
+	    url:"http://guding.seamantf.com/borrowinfo/details",
+		type:"POST",
+		data:JSON.stringify({"id":get_url("id")}),
+		headers:{'Content-Type':'application/json;charset=UTF-8'},
+		success:function(res){
+		  if(res.code==100){
+		    var data=res.data.assets;
+			local(data);
+		  }
+		}
+	  })
+	  $("h1").text("借还详情/修改");
+	  $("p.btn_box").prepend("<span class='btn'>修改</span>");
+	  $(".btn:contains(修改)").on("click",function(){
+		var html=$("[name=borrowDeparture]");
+		$("[name=borrowDeparture]").html(html.html()+option("section","is"));
+		$("option:contains("+html.val()+"):last").remove();
+	    disabled(false);
+		$("[name=remark]").attr("disabled",true);
+		$(".btn:contains(确定)").on("click",function(){
+	      _data("http://guding.seamantf.com/borrowinfo/update","input_box",fields_,required);
+	    })
+	  })
+	}else{
+	  window.location.href="Asset_return.html";
+	}
+	var input=$("input")
+	for(var i=0;i<input.length;i++){
+	  input.eq(i).attr("autocomplete","off")
+	}
+  })
+</script>
+</html>

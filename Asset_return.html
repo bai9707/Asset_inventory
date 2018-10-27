@@ -1,0 +1,145 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+	<title>借还记录</title>
+	<link rel="stylesheet" href="css/reset.css">
+	<link rel="stylesheet" href="css/unify.css">
+  </head>
+  <body>
+    <h1>资产借还列表</h1>
+	<div class="btn_box">
+	  <span class="btn">新增</span>
+	  <span class="btn">查询</span>
+	</div>
+	<div class="input_box">
+	  <ul>
+	    <li><span>资产名称</span><select name="assetName"></select></li>
+	    <li><span>资产编号</span><select name="assetNo"></select></li>
+	    <li><span>借用部门</span><select name="borrowDeparture"></select></li>
+	    <li><span>借还状态</span><select name="borrowStatus"></select></li>
+	    <li><span>开始日期</span><input type="date" name="dateStart"></li>
+	    <li><span>结束日期</span><input type="date" name="dateEnd"></li>
+	  </ul>
+	</div>
+	<table class="table">
+	  <thead></thead>
+	  <tbody></tbody>
+	</table>
+	<div class="article">
+	  <select>
+	    <option value="10">10条/页</option>
+	    <option value="15">15条/页</option>
+	    <option value="20">20条/页</option>
+	    <option value="25">25条/页</option>
+	    <option value="30">30条/页</option>
+	  </select>
+	  <span>上一页</span>
+	  <input type="text" placeholder="总页数">
+		<span>下一页</span>
+		<div class="page"></div>
+	</div>
+  </body>
+  <script src="js/jquery-3.2.1.js"></script>
+  <script src="js/base.js"></script>
+  <script src="js/unify.js"></script>
+  <script>
+    $(function(){
+	  table_box("table","序号,资产编号,资产名称,借用部门,借用人,借用时间,归还时间,借还状态,经办人,创建人,创建日期,备注,操作");
+	  var fields="id,assetNo,assetName,borrowDeparture,borrowUser,borrowDate,returnDate,borrowStatus,agent,founder,dateCreate,remark,operate";
+	  var select="{'select':'assetName'},{'select':'assetNo'},{'select':'borrowStatus'},{'select':'borrowDeparture'},dateStart,dateEnd";
+	  /*获取第一页数据*/
+	  data("http://guding.seamantf.com/borrowinfo/select","get","",select,fields);
+	  /*查询搜索内容数据*/
+	  $(".btn:contains(查询)").on("click",function(){
+	    data("http://guding.seamantf.com/borrowinfo/selectby","select",$(this).text(),select,fields);
+	  })
+	  /*回车查询内容*/
+	  $(".input_box input").on("keyup",function(e){
+		if(e.keyCode==13){
+		  data("http://guding.seamantf.com/borrowinfo/selectby","select","",select,fields);
+		}
+	  })
+	  /*改变查询内容*/
+	  $(".input_box select:not(select[name=assetName])").on("change",function(e){
+		data("http://guding.seamantf.com/borrowinfo/selectby","select","",select,fields);
+	  })
+	  /*页数回车按钮*/
+	  $(".article input").on("keyup",function(e){
+	    if(e.keyCode==13){
+		  data("http://guding.seamantf.com/borrowinfo/selectby","select","",select,fields);
+		};
+	  })
+	  /*上一页按钮*/
+	  $(".article span:nth-child(2)").on("click",function(){
+		data("http://guding.seamantf.com/borrowinfo/selectby","select","-",select,fields);
+	  })
+	  /*下一页按钮*/
+	  $(".article span:nth-child(4)").on("click",function(){
+	    data("http://guding.seamantf.com/borrowinfo/selectby","select","+",select,fields);
+	  })
+	  /*当页显示数改变时*/
+	  $(".article select").on("change",function(){
+	    data("http://guding.seamantf.com/borrowinfo/selectby","select","",select,fields);
+	  })
+	  /*跳转新增*/
+	  $(".btn:contains(新增)").on("click",function(){
+	    window.location.href="a_return_info.html?type=new";
+	  })
+	  /*跳转修改*/
+	  $(".table tbody").on("dblclick","tr",function(){
+		var id=$(this).children("td").eq(0).attr("data-id");
+	    window.location.href="a_return_info.html?type=amend&&id="+id;
+      })
+	  /*点击归还*/
+	  $(".table tbody").on("click",".btn:contains(归还)",function(){
+		if(confirm("确定归还么?")){
+		  $.ajax({
+		    url:"http://guding.seamantf.com/borrowinfo/changestatus",
+		    type:"POST",
+		    data:JSON.stringify({"id":$(this).attr("id")}),
+		    headers:{'Content-Type':'application/json;charset=UTF-8'},
+		    success:function(res){
+		      if(res.code==100){
+			    alert(res.msg);
+			    window.location.reload();
+			  }
+		    }
+		  })
+		}
+	  })
+	  $.ajax({
+	    url:"http://guding.seamantf.com/borrowinfo/selectbo",
+		type:"POST",
+		headers:{'Content-Type':'application/json;charset=UTF-8'},
+		success:function(res){
+		  var _data=res.data;
+		  var html="";
+		  var html_="";
+		  for(var i in _data){
+		    html+="<option value="+i+">"+i+"</option>";
+		  }
+		  $(".input_box [name=assetName]").html("<option value=''>所有资产</option>"+html);
+		  $(".input_box [name=assetName]").on("change",function(){
+		    data_=_data[$(".input_box [name=assetName]").val()];
+			if(data_==null){
+			  $(".input_box [name=assetNo]").html("<option value=''>所有编号</option>");
+			  data("http://guding.seamantf.com/borrowinfo/selectby","select","",select,fields);
+			  return;
+			};
+			data("http://guding.seamantf.com/borrowinfo/selectby","select","",select,fields);
+			html_="";
+		    for(var i=0;i<data_.length;i++){
+		      html_+="<option value="+data_[i].assetNo+">"+data_[i].assetNo+"</option>";
+		    }
+			$(".input_box [name=assetNo]").html("<option value=''>所有编号</option>"+html_);
+		  })
+		}
+	  })
+	  var borrowDeparture=option("section");
+	  $("[name=borrowDeparture]").html(borrowDeparture);
+	  var borrowStatus=option("未还,已还");
+	  $("[name=borrowStatus]").html("<option value=''>所有状态</option>"+borrowStatus);
+	})
+  </script>
+</html>
